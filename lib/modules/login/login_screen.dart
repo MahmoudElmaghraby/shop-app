@@ -1,10 +1,13 @@
 import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shop_app/components/components.dart';
+import 'package:shop_app/layout/shop_layout.dart';
 import 'package:shop_app/modules/login/cubit/cubit.dart';
 import 'package:shop_app/modules/login/cubit/states.dart';
 import 'package:shop_app/modules/register/register_screen.dart';
+import 'package:shop_app/network/local/cache_helper.dart';
 
 class LoginScreen extends StatelessWidget {
   var formKey = GlobalKey<FormState>();
@@ -17,7 +20,26 @@ class LoginScreen extends StatelessWidget {
     return BlocProvider(
       create: (BuildContext context) => ShopLoginCubit(),
       child: BlocConsumer<ShopLoginCubit, ShopLoginStates>(
-        listener: (context, state) {},
+        listener: (context, state) {
+          if (state is ShopLoginSuccessState) {
+            if (state.loginModel.status) {
+              CacheHelper.saveData(
+                key: 'token',
+                value: state.loginModel.data.token,
+              ).then((value) {
+                navigateAndFinish(
+                  context,
+                  ShopLayout(),
+                );
+              });
+            } else {
+              showToast(
+                text: state.loginModel.message,
+                state: ToastStates.ERROR,
+              );
+            }
+          }
+        },
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(),
@@ -78,7 +100,8 @@ class LoginScreen extends StatelessWidget {
                           },
                           prefix: Icons.lock_outline,
                           suffixPressed: () {
-                            ShopLoginCubit.get(context).changePasswordVisibility();
+                            ShopLoginCubit.get(context)
+                                .changePasswordVisibility();
                           },
                         ),
                         SizedBox(height: 15),
