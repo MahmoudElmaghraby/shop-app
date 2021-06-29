@@ -10,6 +10,7 @@ import 'package:shop_app/shared/bloc_observer.dart';
 import 'package:shop_app/shared/themes.dart';
 
 import 'components/constants.dart';
+import 'modules/login/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +25,7 @@ void main() async {
     if (token != null) {
       widget = ShopLayout();
     } else {
-      widget = ShopLayout(); //LoginScreen() when you have a valid account
+      widget = LoginScreen(); //LoginScreen() when you have a valid account
     }
   } else {
     widget = OnBoardingScreen();
